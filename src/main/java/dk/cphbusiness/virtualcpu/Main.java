@@ -4,7 +4,7 @@ public class Main {
   
   public static void main(String[] args) {
     System.out.println("Welcome to the awesome CPU program");
-    Program program = new Program("00101001", "00001111", "10101010", "MOV B +3");
+    Program program = new Program("00101001", "00001111", "10101010");
     Machine machine = new Machine();
     machine.load(program);
     machine.print(System.out);
