@@ -119,7 +119,10 @@ public class Machine {
             cpu.incIp();
         }  else if ((instr & 0b1111_1000) == 0b0001_1000) {
             // 0001 1ooo	RTN +o	IP ← [SP++]; SP += o; IP++
-            
+             int o = instr & 0b0000_0111;
+             cpu.setIp(memory.get(cpu.getSp() + o));
+             cpu.setSp(cpu.getSp() + 1);
+             cpu.incIp();
         } 
         else if ((instr & 0b1111_0000) == 0b0010_0000) {
             // 0010 r ooo	MOV r o	   [SP + o] ← r; IP++
@@ -150,8 +153,29 @@ public class Machine {
                 memory.set(cpu.getSp() + o, cpu.getB());
             }
             cpu.incIp();
+        } else if ((instr & 0b1111_0000) == 0b0011_0000) {
+            // 0011 ooor	MOV o r	r ← [SP + o]; IP++
+            int o = instr & 0b0000_1110;
+            int r = (instr & 0b0000_0001);
+             if (r == cpu.A) {
+                cpu.setA(memory.get(cpu.getSp() + o));
+            } else {
+                cpu.setB(memory.get(cpu.getSp() + o));
+            }
+        } else if (instr == 0b0001_0111) {
+            // 01vv vvvr	MOV v r	r ← v; IP++
+            cpu.setA(cpu.getA() - 1);
+            cpu.incIp();
+        } else if (instr == 0b0001_0111) {
+            // 10aa aaaa	JMP #a	if F then IP ← a else IP++
+            cpu.setA(cpu.getA() - 1);
+            cpu.incIp();
+        } else if (instr == 0b0001_0111) {
+            //11aa aaaa	CALL #a	if F then [--SP] ← IP; IP ← a else IP++
+            cpu.setA(cpu.getA() - 1);
+            cpu.incIp();
         }
-    }
+    } 
 
     public void print(PrintStream out) {
         memory.print(out);
